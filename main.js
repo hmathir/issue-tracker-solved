@@ -5,10 +5,14 @@ function submitIssue(e) {
   const description = getInputValue('issueDescription');
   const severity = getInputValue('issueSeverity');
   const assignedTo = getInputValue('issueAssignedTo');
+  if((!description) || (!assignedTo)){
+    alert ('Input Something!');
+    return;
+  }
   const id = Math.floor(Math.random()*100000000) + '';
-  const status = 'Open';
+  let status = 'Open';
 
-  const issue = { id, description, severity, assignedTo, status };
+  const issue = { id, description, severity, assignedTo, status};
   let issues = [];
   if (localStorage.getItem('issues')){
     issues = JSON.parse(localStorage.getItem('issues'));
@@ -31,17 +35,22 @@ const closeIssue = id => {
 
 const deleteIssue = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
-  const remainingIssues = issues.filter( issue.id !== id )
+  const remainingIssues = issues.filter(issue => issue.id !== id )
   localStorage.setItem('issues', JSON.stringify(remainingIssues));
+  fetchIssues();
 }
 
 const fetchIssues = () => {
   const issues = JSON.parse(localStorage.getItem('issues'));
+  let newIssue = {};
+  if(issues){
+    newIssue = issues;
+  }
   const issuesList = document.getElementById('issuesList');
   issuesList.innerHTML = '';
 
-  for (var i = 0; i < issues.length; i++) {
-    const {id, description, severity, assignedTo, status} = issues[i];
+  for (var i = 0; i < newIssue.length; i++) {
+    const {id, description, severity, assignedTo, status} = newIssue[i];
 
     issuesList.innerHTML +=   `<div class="well">
                               <h6>Issue ID: ${id} </h6>
@@ -49,8 +58,16 @@ const fetchIssues = () => {
                               <h3> ${description} </h3>
                               <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
                               <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
-                              <a href="#" onclick="setStatusClosed(${id})" class="btn btn-warning">Close</a>
-                              <a href="#" onclick="deleteIssue(${id})" class="btn btn-danger">Delete</a>
+                              <a href="#" onclick="closeIssue('${id}')" class="btn btn-warning">Close</a>
+                              <a href="#" onclick="deleteIssue('${id}')" class="btn btn-danger">Delete</a>
                               </div>`;
   }
 }
+// const setStatusClosed =(id, status) => {
+
+//   const issues = JSON.parse(localStorage.getItem('issues'));
+//   console.log(issues);
+//   // status = 'Closed';
+//   // const statusCheck = document.getElementById(id);
+//   // statusCheck.innerText = status;
+// }
