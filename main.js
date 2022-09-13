@@ -20,10 +20,42 @@ function submitIssue(e) {
   issues.push(issue);
   localStorage.setItem('issues', JSON.stringify(issues));
 
+  //CLEAR THE INPUT FEILD
   document.getElementById('issueInputForm').reset();
   fetchIssues();
   e.preventDefault();
 }
+
+const fetchIssues = () => {
+  const issues = JSON.parse(localStorage.getItem('issues'));
+  let newIssue = {};
+  if(issues){
+    newIssue = issues;
+  }
+  const issuesList = document.getElementById('issuesList');
+  issuesList.innerHTML = '';
+  for (var i = 0; i < newIssue.length; i++) {
+    // console.log(newIssue[i]);
+
+    //Object Distructuring...
+    const {id, description, severity, assignedTo, status} = newIssue[i];
+    // console.log(id);
+
+    const newDiv = document.createElement('div');
+    newDiv.innerHTML = `<div class="well">
+                              <h6>Issue ID: ${id} </h6>
+                              <p><span class="label label-info ${status === 'Closed' ? 'colorText' : ''}"> ${status} </span></p>
+                              <h3 class="${status === 'Closed' ? 'style' : ''}"> ${description} </h3>
+                              <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
+                              <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
+                              <a href="#" onclick="closeIssue('${id}')" class="btn btn-warning">Close</a>
+                              <a href="#" onclick="deleteIssue('${id}')" class="btn btn-danger">Delete</a>
+                              </div>`;
+    issuesList.appendChild(newDiv);
+  }
+
+}
+
 
 const closeIssue = id => {
   const issues = JSON.parse(localStorage.getItem('issues'));
@@ -39,35 +71,3 @@ const deleteIssue = id => {
   localStorage.setItem('issues', JSON.stringify(remainingIssues));
   fetchIssues();
 }
-
-const fetchIssues = () => {
-  const issues = JSON.parse(localStorage.getItem('issues'));
-  let newIssue = {};
-  if(issues){
-    newIssue = issues;
-  }
-  const issuesList = document.getElementById('issuesList');
-  issuesList.innerHTML = '';
-
-  for (var i = 0; i < newIssue.length; i++) {
-    const {id, description, severity, assignedTo, status} = newIssue[i];
-
-    issuesList.innerHTML +=   `<div class="well">
-                              <h6>Issue ID: ${id} </h6>
-                              <p><span class="label label-info"> ${status} </span></p>
-                              <h3> ${description} </h3>
-                              <p><span class="glyphicon glyphicon-time"></span> ${severity}</p>
-                              <p><span class="glyphicon glyphicon-user"></span> ${assignedTo}</p>
-                              <a href="#" onclick="closeIssue('${id}')" class="btn btn-warning">Close</a>
-                              <a href="#" onclick="deleteIssue('${id}')" class="btn btn-danger">Delete</a>
-                              </div>`;
-  }
-}
-// const setStatusClosed =(id, status) => {
-
-//   const issues = JSON.parse(localStorage.getItem('issues'));
-//   console.log(issues);
-//   // status = 'Closed';
-//   // const statusCheck = document.getElementById(id);
-//   // statusCheck.innerText = status;
-// }
